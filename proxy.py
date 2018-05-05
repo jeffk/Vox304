@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 import re
 import random
 
-VOX_SITES = ['http://www.sbnation.com','http://www.vox.com','http://www.theverge.com','http://www.polygon.com','http://www.eater.com','http://www.racked.com','http://www.curbed.com']
+VOX_SITES = ['http://www.vox.com','http://www.theverge.com','http://www.polygon.com','http://www.eater.com','http://www.racked.com','http://www.curbed.com']
 VALID_TAGS = ['h3', 'h2', 'hr', 'br', 'strong', 'em', 'p', 'a', 'body', 'table','tr','td', 'br','script', 'head', 'title', 'div', 'img', 'span']
 
 def sanitize_html(value):
