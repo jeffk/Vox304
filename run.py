@@ -36,11 +36,11 @@ fcntl(proxy.stdout, F_SETFL, flags | O_NONBLOCK)
 sleep(1)
 
 basiliskII = Popen(['./BasiliskII.app/Contents/MacOS/BasiliskII','--config','./basilisk_ii_prefs'], stdout=PIPE, stderr=STDOUT)
-sleep(25)
+sleep(30)
 #print read(basiliskII.stdout.fileno(), 640)
 screencaprm = Popen(['/bin/rm -f BasiliskII.png'], shell=True)
 screencaprm.wait()
-screencap = Popen(['/usr/sbin/screencapture -l$(./GetWindowID BasiliskII "Basilisk II") ./BasiliskII.png'], shell=True, stdout=PIPE, stderr=STDOUT)
+screencap = Popen(['/usr/sbin/screencapture -o -l$(./GetWindowID BasiliskII "Basilisk II") ./BasiliskII.png'], shell=True, stdout=PIPE, stderr=STDOUT)
 screencap.wait()
 #print read(screencap.stdout.fileno(), 640)
 text = read(proxy.stdout.fileno(), 640)
@@ -48,7 +48,7 @@ text = read(proxy.stdout.fileno(), 640)
 
 img = Image.open("BasiliskII.png")
 # image is 752 x 614, should be 640x480
-img2 = img.crop((56, 54, 696, 534))
+img2 = img.crop((0, 22, 640, 502))
 img2.save("screenshot.png")
 
 data = {}
