@@ -60,7 +60,9 @@ for line in text.split("\n"):
 		pass
 
 print data
-
+if data['AUTHOR_TWITTER']:
+	data['AUTHOR'] = data['AUTHOR_TWITTER']
+	
 status = "%s by %s on %s\n%s" % (data['HEADLINE'], data['AUTHOR'], data['TWITTER'], data['HEADLINE_URL'])
 photo = open('screenshot.png', 'rb')
 response = twitter.upload_media(media=photo)

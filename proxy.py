@@ -95,6 +95,17 @@ def sanitize_html(value):
     if authors:
         print 'AUTHOR %s' % authors[0].find('a').string.replace("\"","\\\"")
         print 'AUTHOR_URL %s' % authors[0].find('a')['href'].replace("\"","\\\"")
+
+        parsed_author_page = urlparse.urlparse(authors[0].find('a')['href'].replace("\"","\\\""))
+        conn2 = httplib.HTTPSConnection(parsed_author_page.netloc)
+        conn2.request("GET",parsed_author_page.path)
+        res2 = conn2.getresponse()
+        author_page = res2.read()
+        author_soup = BeautifulSoup(author_page, "html.parser", from_encoding='utf-8')
+        for link in author_soup.find_all("a",{'class':'c-social-buttons__item'}):
+            if 'twitter.com' in link['href']:
+                print "AUTHOR_TWITTER %s" % ('@'+link['href'].rstrip("/").split("/")[-1])
+
     twitter = soup.find_all('a',{'class':'twitter'})
     if twitter:
         print 'TWITTER %s' % twitter[0]['href'].replace("http:","https:").replace("www.","").replace("https://twitter.com/","@").replace("/","")
