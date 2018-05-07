@@ -51,6 +51,7 @@ img = Image.open("BasiliskII.png")
 img2 = img.crop((0, 22, 640, 502))
 img2.save("screenshot.png")
 
+
 data = {}
 for line in text.split("\n"):
 	try:
@@ -60,7 +61,7 @@ for line in text.split("\n"):
 		pass
 
 print data
-if data['AUTHOR_TWITTER']:
+if data.get('AUTHOR_TWITTER'):
 	data['AUTHOR'] = data['AUTHOR_TWITTER']
 
 status = "%s by %s on %s\n%s" % (data['HEADLINE'], data['AUTHOR'], data['TWITTER'], data['HEADLINE_URL'])
@@ -68,6 +69,7 @@ photo = open('screenshot.png', 'rb')
 response = twitter.upload_media(media=photo)
 twitter.update_status(status=status, media_ids=[response['media_id']])
 
+sleep(5)
 proxy.terminate()
 
 os.killpg(os.getpgid(basiliskII.pid), signal.SIGKILL)
