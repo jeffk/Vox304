@@ -21,7 +21,9 @@ from bs4 import BeautifulSoup
 import re
 import random
 
-VOX_SITES = ['http://www.vox.com','http://www.theverge.com','http://www.polygon.com','http://www.eater.com','http://www.racked.com','http://www.curbed.com']
+# VOX_SITES = ['http://www.vox.com','http://www.theverge.com','http://www.polygon.com','http://www.eater.com','http://www.racked.com','http://www.curbed.com']
+
+
 VALID_TAGS = ['h3', 'h2', 'hr', 'br', 'strong', 'em', 'p', 'a', 'body', 'table','tr','td', 'br','script', 'head', 'title', 'div', 'img', 'span']
 
 def sanitize_html(value):
@@ -30,7 +32,8 @@ def sanitize_html(value):
     # for div in soup.find_all("nav", {'class':'c-global-header__links'}): 
     #     div.decompose()
     site = ''
-    site = soup.find("meta", {"property":"og:site_name"})['content']
+    if soup.find("meta", {"property":"og:site_name"}):
+        site = soup.find("meta", {"property":"og:site_name"})['content']
     body_tag = soup.find("body")
     body_tag['bgcolor'] = '#FFFFFF'
 
@@ -514,7 +517,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         if req.path.endswith('pickone.com/'):
             print "rewriting headers"
             req.send_response(301)
-            site = random.choice(VOX_SITES)
+            site = choose_site()
             print "REDIRECTING TO: %s" % site
             req.send_header('Location',site)
             req.end_headers()
@@ -530,6 +533,28 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
 
     def save_handler(self, req, req_body, res, res_body):
         self.print_info(req, req_body, res, res_body)
+
+def choose_site():
+    site_list = []
+    choices = []
+    c = 0
+    sites = open("sites.txt")
+    for site in sites.readlines():
+        site = site.rstrip()
+        if site:
+            c  = c + 1
+            if c >= 3:
+                choices.append(site)
+            site_list.append(site)
+    sites.close()
+    chosen_site = random.choice(choices)
+    site_list.remove(chosen_site)
+    site_list.insert(0,chosen_site)
+    sites = open("sites.txt","w")
+    for site in site_list:
+        sites.write(site+"\n")
+    sites.close()
+    return chosen_site
 
 
 def test(HandlerClass=ProxyRequestHandler, ServerClass=ThreadingHTTPServer, protocol="HTTP/1.1"):
