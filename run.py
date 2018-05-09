@@ -62,7 +62,7 @@ print data
 if data.get('AUTHOR_TWITTER'):
 	data['AUTHOR'] = data['AUTHOR_TWITTER']
 
-status = "%s by %s on %s\n%s" % (data['HEADLINE'], data['AUTHOR'], data['TWITTER'], data['HEADLINE_URL'])
+status = "%s by %s on %s\n%s" % (data['HEADLINE'], data['AUTHOR'], data.get('TWITTER', data['SITE']), data['HEADLINE_URL'])
 photo = open('screenshot.png', 'rb')
 response = twitter.upload_media(media=photo)
 twitter.update_status(status=status, media_ids=[response['media_id']])
