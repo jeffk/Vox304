@@ -36,7 +36,7 @@ fcntl(proxy.stdout, F_SETFL, flags | O_NONBLOCK)
 sleep(1)
 
 basiliskII = Popen(['./BasiliskII.app/Contents/MacOS/BasiliskII','--config','./basilisk_ii_prefs'], stdout=PIPE, stderr=STDOUT)
-sleep(40)
+sleep(120)
 screencaprm = Popen(['/bin/rm -f BasiliskII.png'], shell=True)
 screencaprm.wait()
 screencap = Popen(['/usr/sbin/screencapture -o -l$(./GetWindowID BasiliskII "Basilisk II") ./BasiliskII.png'], shell=True, stdout=PIPE, stderr=STDOUT)
