@@ -58,7 +58,7 @@ def sanitize_html(value):
             cnt = cnt + 1
         for div in soup.find_all('div', {'class': 'c-entry-box--compact__image'}):
             div.decompose()
-            
+
     for span in soup.find_all('span',{'class': 'c-global-header__locale'}):
         span.decompose()
 
@@ -103,11 +103,12 @@ def sanitize_html(value):
     #     span.replace_with(new_tag)
     headlines = soup.find_all('h2')
     if headlines:
-        print 'HEADLINE %s' % headlines[0].find('a').string.encode("utf-8").replace(u"\"",u"\\\"")
-        print 'HEADLINE_URL %s' % headlines[0].find('a')['href'].encode("utf-8").replace(u"\"",u"\\\"")
+        print 
+        print 'HEADLINE %s' % headlines[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
+        print 'HEADLINE_URL %s' % headlines[0].find('a')['href'].replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
     authors = soup.find_all('span',{'class':'c-byline__item'})
     if authors:
-        print 'AUTHOR %s' % authors[0].find('a').string.replace(u"\"",u"\\\"")
+        print 'AUTHOR %s' % authors[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
         print 'AUTHOR_URL %s' % authors[0].find('a')['href'].replace("\"","\\\"")
 
         parsed_author_page = urlparse.urlparse(authors[0].find('a')['href'].replace("\"","\\\""))
