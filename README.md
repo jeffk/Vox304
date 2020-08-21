@@ -4,7 +4,7 @@ A kinda complex twitter bot that renders the homepage of a random Vox Media site
 
 Online at [@vox304](http://twitter.com/vox304)
 
-If you have questions on setting up your own, ping me on twitter [@jeffk](http://twitter.com/jeffk).
+If you have questions on setting up your own, ping me on twitter [@objectfox](http://twitter.com/objectfox).
 
 Uses:
 

@@ -37,7 +37,7 @@ def sanitize_html(value):
     body_tag = soup.find("body")
     body_tag['bgcolor'] = '#FFFFFF'
 
-    print "SITE " + site
+    print("SITE " + site)
 
     l = 1
     for div in soup.find_all("li", {'class':'c-global-header__link'}): 
@@ -61,6 +61,27 @@ def sanitize_html(value):
 
     for span in soup.find_all('span',{'class': 'c-global-header__locale'}):
         span.decompose()
+
+    for a in soup.find_all('a',{'class': 'link-skip'}):
+        a.decompose()
+
+    for h2 in soup.find_all('h2',{'class': 'sr-only'}):
+        h2.decompose()
+
+    for span in soup.find_all('span',{'class': 'sr-only'}):
+        span.decompose()
+
+    for ul in soup.find_all('ul',{'class': 'global-header__social--label'}):
+        ul.decompose()
+
+    for p in soup.find_all('p',{'class': 'sr-only'}):
+        p.decompose()
+
+    for span in soup.find_all('span',{'class': 'c-global-header__search'}):
+        span.decompose()    
+
+    for div in soup.find_all('div',{'class': 'c-breaking-news'}):
+        div.decompose()    
 
     for div in soup.find_all("a", {'class':'c-global-header__label'}): 
         new_tag = soup.new_tag("a", href='/more')
@@ -101,15 +122,15 @@ def sanitize_html(value):
     #     new_tag.string = "Vox"
 
     #     span.replace_with(new_tag)
-    headlines = soup.find_all('h2')
+    headlines = soup.find_all('h2', {"class" : "c-entry-box--compact__title"})
     if headlines:
-        print 
-        print 'HEADLINE %s' % headlines[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
-        print 'HEADLINE_URL %s' % headlines[0].find('a')['href'].replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
+        print()
+        print('HEADLINE %s' % headlines[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\""))
+        print('HEADLINE_URL %s' % headlines[0].find('a')['href'].replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\""))
     authors = soup.find_all('span',{'class':'c-byline__item'})
     if authors:
-        print 'AUTHOR %s' % authors[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\"")
-        print 'AUTHOR_URL %s' % authors[0].find('a')['href'].replace("\"","\\\"")
+        print('AUTHOR %s' % authors[0].find('a').string.replace(u'\u201c','"').replace(u'\u201d','"').replace(u"\u2019","'").replace(u'\u2018',"'").replace(u"\"",u"\\\""))
+        print('AUTHOR_URL %s' % authors[0].find('a')['href'].replace("\"","\\\""))
 
         parsed_author_page = urlparse.urlparse(authors[0].find('a')['href'].replace("\"","\\\""))
         conn2 = httplib.HTTPSConnection(parsed_author_page.netloc)
@@ -119,11 +140,11 @@ def sanitize_html(value):
         author_soup = BeautifulSoup(author_page, "html.parser", from_encoding='utf-8')
         for link in author_soup.find_all("a",{'class':'c-social-buttons__item'}):
             if 'twitter.com' in link['href']:
-                print "AUTHOR_TWITTER %s" % ('@'+link['href'].rstrip("/").split("/")[-1])
+                print("AUTHOR_TWITTER %s" % ('@'+link['href'].rstrip("/").split("/")[-1]))
 
     twitter = soup.find_all('a',{'class':'twitter'})
     if twitter:
-        print 'TWITTER %s' % twitter[0]['href'].replace("http:","https:").replace("www.","").replace("https://twitter.com/","@").replace("/","")
+        print('TWITTER %s' % twitter[0]['href'].replace("http:","https:").replace("www.","").replace("https://twitter.com/","@").replace("/",""))
 
     i = 1
     for img in soup.find_all("img"): 
@@ -315,7 +336,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
             origin = (scheme, netloc)
             if not origin in self.tls.conns:
                 if scheme == 'https':
-                    self.tls.conns[origin] = httplib.HTTPSConnection(netloc, timeout=self.timeout)
+                    self.tls.conns[origin] = httplib.HTTPSConnection(netloc, timeout=self.timeout, context=ssl._create_unverified_context())
                 else:
                     self.tls.conns[origin] = httplib.HTTPConnection(netloc, timeout=self.timeout)
             conn = self.tls.conns[origin]
@@ -450,22 +471,22 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         req_header_text = "%s %s %s\n%s" % (req.command, req.path, req.request_version, req.headers)
         res_header_text = "%s %d %s\n%s" % (res.response_version, res.status, res.reason, res.headers)
 
-        print with_color(33, req_header_text)
+        print(with_color(33, req_header_text))
 
         u = urlparse.urlsplit(req.path)
         if u.query:
             query_text = parse_qsl(u.query)
-            print with_color(32, "==== QUERY PARAMETERS ====\n%s\n" % query_text)
+            print(with_color(32, "==== QUERY PARAMETERS ====\n%s\n" % query_text))
 
         cookie = req.headers.get('Cookie', '')
         if cookie:
             cookie = parse_qsl(re.sub(r';\s*', '&', cookie))
-            print with_color(32, "==== COOKIE ====\n%s\n" % cookie)
+            print(with_color(32, "==== COOKIE ====\n%s\n" % cookie))
 
         auth = req.headers.get('Authorization', '')
         if auth.lower().startswith('basic'):
             token = auth.split()[1].decode('base64')
-            print with_color(31, "==== BASIC AUTH ====\n%s\n" % token)
+            print(with_color(31, "==== BASIC AUTH ====\n%s\n" % token))
 
         if req_body is not None:
             req_body_text = None
@@ -488,14 +509,14 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
                 req_body_text = req_body
 
             if req_body_text:
-                print with_color(32, "==== REQUEST BODY ====\n%s\n" % req_body_text)
+                print(with_color(32, "==== REQUEST BODY ====\n%s\n" % req_body_text))
 
-        print with_color(36, res_header_text)
+        print(with_color(36, res_header_text))
 
         cookies = res.headers.getheaders('Set-Cookie')
         if cookies:
             cookies = '\n'.join(cookies)
-            print with_color(31, "==== SET-COOKIE ====\n%s\n" % cookies)
+            print(with_color(31, "==== SET-COOKIE ====\n%s\n" % cookies))
 
         if res_body is not None:
             res_body_text = None
@@ -516,31 +537,33 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
                 m = re.search(r'<title[^>]*>\s*([^<]+?)\s*</title>', res_body, re.I)
                 if m:
                     h = HTMLParser()
-                    print with_color(32, "==== HTML TITLE ====\n%s\n" % h.unescape(m.group(1).decode('utf-8')))
+                    print(with_color(32, "==== HTML TITLE ====\n%s\n" % h.unescape(m.group(1).decode('utf-8'))))
             elif content_type.startswith('text/') and len(res_body) < 1024:
                 res_body_text = res_body
 
             if res_body_text:
-                print with_color(32, "==== RESPONSE BODY ====\n%s\n" % res_body_text)
+                print(with_color(32, "==== RESPONSE BODY ====\n%s\n" % res_body_text))
 
     def request_handler(self, req, req_body):
         if req.path.startswith('http:'):
             req.path = req.path.replace('http:','https:')
+            print("got http, replacing with https")
+            print(req.path)
         if req.path.endswith('pickone.com/'):
-            print "rewriting headers"
+            print("rewriting headers")
             req.send_response(301)
             site = choose_site()
-            print "REDIRECTING TO: %s" % site
+            print("REDIRECTING TO: %s" % site)
             req.send_header('Location',site)
             req.end_headers()
-            print req.path
+            print(req.path)
             return True
         # pass
 
     def response_handler(self, req, req_body, res, res_body):
-        print "Content type: %s" % res.getheader('Content-Type')
+        print("Content type: %s" % res.getheader('Content-Type'))
         if res.getheader('Content-Type').startswith('text/html'):
-            print "Cleaning HTML"
+            print("Cleaning HTML")
             return sanitize_html(res_body.replace('’','\''))
 
     def save_handler(self, req, req_body, res, res_body):
@@ -555,7 +578,7 @@ def choose_site():
         site = site.rstrip()
         if site:
             c  = c + 1
-            if c >= 3:
+            if c >= 5:
                 choices.append(site)
             site_list.append(site)
     sites.close()
@@ -580,7 +603,7 @@ def test(HandlerClass=ProxyRequestHandler, ServerClass=ThreadingHTTPServer, prot
     httpd = ServerClass(server_address, HandlerClass)
 
     sa = httpd.socket.getsockname()
-    print "Serving HTTP Proxy on", sa[0], "port", sa[1], "..."
+    print("Serving HTTP Proxy on", sa[0], "port", sa[1], "...")
     httpd.serve_forever()
 
 
